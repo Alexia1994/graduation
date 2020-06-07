@@ -1,19 +1,15 @@
-# Interactive Genetic Algorithm for Cartoon Design
+# Interactive Genetic Algorithm for Art Design
 
-This is a project that using Interactive Genetic Algorithm(IGA) to achieve cartoon design. This project will simply included two files - App.py and IGA.py
+This is a project that using Cartesian Genetic Programming(CGP)and Interactive Evolutionary Computation(IEC) to achieve abstract art design. This project will simply included three files - App.py, cgp.py and ImageGenerator.py.
 
 The App.py included the interface of the program.
 
-The IGA.py is the IGA logic.
+The cgp.py is the CGP logic, including mutate、crossover and so on.
 
-## Dataset
+The ImageGenerator.py included the functions which generate pirctures.
 
-- This dataset is downloaded from the Internet.
+What's more, because CGP uses mutate only previously, the programming just recurs the work  ```A_new_crossover_technique_for_Cartesian_genetic_programming``` by Julian Francis Miller for adding cross_over function for the program.
 
-- The path of dataset will be:  
-```/components/```
-
-- The data included difference components of a cartoon character.
 
 ## Execute the program
 
