@@ -17,4 +17,4 @@ What's more, because CGP uses mutate only previously, the programming just recur
 ```python App.py```
 
 - The interface of the program:  
-![demo.png](https://github.com/kwunshing123/Interactive-Genetic-Algorithm-for-Cartoon-Design/blob/master/demo.png)
+![demo.png](https://github.com/Alexia1994/Interactive-Genetic-Algorithm-for-Art-Design/master/demo.png)
