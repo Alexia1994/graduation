@@ -2,62 +2,58 @@ import math
 import time
 import tkinter as tk
 from functools import partial
-from IGA import IGA
+from ImageGenerator import ImageGenerator
 from PIL import Image, ImageTk, ImageGrab
 from tkinter import messagebox
 
 class App(tk.Tk):
-    def __init__(self, name, iga):
+    def __init__(self, name, image_generator):
         super(App, self).__init__()
 
         self.name = name
-        self.iga = iga
+        self.image_generator = image_generator
         self.title(self.name)
         self.geometry('%dx%d+0+0' % (self.winfo_screenwidth(), self.winfo_screenheight()))
+        # change size
         self.resizable(False, False)
-        self.selected_character = [0] * iga.population_size
-        self.component_index = {
-            2: { "name": "lower_body", "width": 75, "height": 100, "x": 150, "y":255 },
-            3: { "name": "right_hand", "width": 20, "height": 70, "x": 180, "y":160 },
-            4: { "name": "left_hand", "width": 20, "height": 70, "x": 120, "y":160 },
-            5: { "name": "upper_body", "width": 75, "height": 100, "x": 150, "y":165 },
-            6: { "name": "hair", "width": 60, "height": 38, "x": 151, "y":76 },
-            7: { "name": "shape_of_face", "width": 50, "height": 50, "x": 150, "y":95 },
-            8: { "name": "eyes", "width": 35, "height": 20, "x": 150, "y":90 },
-            9: { "name": "nose", "width": 10, "height": 10, "x": 150, "y":100 },
-            10: { "name": "mouth", "width": 30, "height": 10, "x": 150, "y":113 },
-            11: { "name": "ears", "width": 70, "height": 20, "x": 150, "y":90 }
-        }
+        self.selected_character = [0] * image_generator.population_size
+
+
 
     def _set_top_menu_bar(self):
         # Top menu bar
         self.menubar = tk.Menu(self)
         self.operation_menu = tk.Menu(self.menubar, tearoff=0)
+        # mutiple menu
         self.menubar.add_cascade(label='Program', menu=self.operation_menu)
+        # separator for drop-down menu
         self.operation_menu.add_separator()
         self.operation_menu.add_command(label='Exit', command=self.quit)
         self.configure(menu=self.menubar)
 
+
+
     def _set_left_frame(self):
         # Left frame show images
+        # Canvas + grid
         self.left_frame = tk.Frame(self)
         self.canvas1 = tk.Canvas(self.left_frame, bg="lightgrey",
-                                 width=300, height=350, highlightthickness=0)
+                                 width=300, height=300, highlightthickness=0)
         self.canvas1.grid(row=0, column=0, columnspan=2, padx=3, pady=3)
         self.canvas2 = tk.Canvas(self.left_frame, bg="lightgrey",
-                                 width=300, height=350, highlightthickness=0)
+                                 width=300, height=300, highlightthickness=0)
         self.canvas2.grid(row=0, column=2, columnspan=2, padx=3, pady=3)
         self.canvas3 = tk.Canvas(self.left_frame, bg="lightgrey",
-                                 width=300, height=350, highlightthickness=0)
+                                 width=300, height=300, highlightthickness=0)
         self.canvas3.grid(row=0, column=4, columnspan=2, padx=3, pady=3)
         self.canvas4 = tk.Canvas(self.left_frame, bg="lightgrey",
-                                 width=300, height=350, highlightthickness=0)
+                                 width=300, height=300, highlightthickness=0)
         self.canvas4.grid(row=2, column=0, columnspan=2, padx=3, pady=3)
         self.canvas5 = tk.Canvas(self.left_frame, bg="lightgrey",
-                                 width=300, height=350, highlightthickness=0)
+                                 width=300, height=300, highlightthickness=0)
         self.canvas5.grid(row=2, column=2, columnspan=2, padx=3, pady=3)
         self.canvas6 = tk.Canvas(self.left_frame, bg="lightgrey",
-                                 width=300, height=350, highlightthickness=0)
+                                 width=300, height=300, highlightthickness=0)
         self.canvas6.grid(row=2, column=4, columnspan=2, padx=3, pady=3)
         self.canvas_index = { 0: self.canvas1, 1: self.canvas2, 2: self.canvas3,
                               3: self.canvas4, 4: self.canvas5, 5: self.canvas6 }
@@ -80,6 +76,9 @@ class App(tk.Tk):
         self.left_frame.pack_propagate(0)
         self.left_frame.pack(side=tk.LEFT, fill="both")
 
+
+
+
     def _enable_canvas_btns(self):
         for btn_index, btn in enumerate(self.canvas_btns):
             btn.configure(cursor="right_ptr")
@@ -92,8 +91,12 @@ class App(tk.Tk):
                 btn.bind("<Enter>", lambda e: self._hover_button(e, "#51A5C3"))
                 btn.bind("<Leave>", lambda e: self._hover_button(e, "#33B5E5"))
 
+
+
     def _hover_button(self, event, color):
         event.widget.configure(bg=color)
+
+
 
     def _set_right_frame(self):
         # Right frame show info and operation
@@ -137,68 +140,81 @@ class App(tk.Tk):
 
         self.right_frame.pack(side=tk.RIGHT)
 
+
+
     def _next_generation_button(self):
         self.menu_btn[0].configure(cursor="right_ptr", text="Next Generation")
         self.menu_btn[0].bind("<Button-1>", lambda e: self._show_next_generation())
 
-    def _show_info(self):
-        self.info.set("Population Size: " + str(self.iga.population_size) + "\n" +
-                      "Generation: " + str(self.iga.generation) + "\n" +
-                      "Mutation Probability: " + str(self.iga.mutation_prob) + "\n" +
-                      "Version: v1.2.4")
 
-    def _show_characters(self):
+
+    def _show_info(self):
+        self.info.set("Population Size: " + str(self.image_generator.population_size) + "\n" +
+                      "Generation: " + str(self.image_generator.generation) + "\n" +
+                      "Mutation Probability: " + str(self.image_generator.mutation_prob) + "\n" +
+                      "Version: v1.0")
+
+
+
+    def _show_images(self):
         self.img = []
-        for character_id, character in enumerate(self.iga.population):
+        x = 22
+        y = 22
+        for character_id, character in enumerate(self.image_generator.population):
             canvas = self.canvas_index.get(character_id, "Index Error")
-            for component_id, component in enumerate(character[2:]):
-                part = self.component_index.get(component_id+2, "Index Error")
-                width = int(part["width"] * (1.1 + 0.5*(int(character[1], 2)-1)))
-                height = int(part["height"] * (1 + 0.1*(int(character[0], 2)-1)))
-                x = int(part["x"] * (1.1 + 0.5*(int(character[1], 2)-1)))
-                if character[1] == '0':
-                    x += 50
-                y = int(part["y"] * (1 + 0.1*(int(character[0], 2)-1)))
-                image = Image.open("components/" + part["name"] + "/" + component + ".png")
-                image = image.resize((width, height), Image.ANTIALIAS)
-                self.img.append(ImageTk.PhotoImage(image))
-                canvas.create_image(x, y, image=self.img[-1])
+
+            pixels = self.image_generator.decode_pop(character)
+            image = Image.fromarray(pixels, mode='RGB')
+            self.img.append(ImageTk.PhotoImage(image))
+            # the last one
+            canvas.create_image(x, y, image=self.img[-1],  anchor='nw')
+            print("character_id, x, y", character_id, x, y)
+
 
     def _save_Canvas(self, canvas_id):
         cv = self.canvas_index.get(canvas_id, "Index Error")
-        x = 5 + canvas_id % 3 * 610
-        y = 50 + math.floor(canvas_id / 3) * 750
-        x1 = x + 600
-        y1 = y + 700
-        box = (x, y, x1, y1)
-        path = "character" + str(canvas_id + 1) + "_" + str(int(time.time())) + ".png"
-        ImageGrab.grab(bbox=box).save(path, "PNG")
+        path = "image" + str(canvas_id + 1) + "_" + str(int(time.time())) + ".png"
+        
+        self.img[canvas_id]._PhotoImage__photo.write(path)
         messagebox.showinfo("Export the image", "Saved the image as " + path)
 
+
+
     def _select_character(self, canvas_id):
+        '''
+        if chosen then turn 1
+        when next generation turn 0
+        '''
         cv = self.canvas_index.get(canvas_id, "Index Error")
         self.selected_character[canvas_id] = 1 - self.selected_character[canvas_id]
         cv.configure(highlightthickness= 3 - int(cv['highlightthickness']), highlightbackground="black")
 
+
+
     def _start(self):
-        self.iga._initial_population()
+        self.image_generator.initial_population()
         self._show_info()
-        self._show_characters()
+        self._show_images()
         self._enable_canvas_btns()
         self._next_generation_button()
 
+
+
     def _show_next_generation(self):
-        self.iga._next_generation(self.selected_character)
+    
+        self.image_generator.next_generation(self.selected_character)
         for selected_index, value in enumerate(self.selected_character):
+            #toggle the chosen one(1->0)
             if value == 1:
                 self._select_character(selected_index)
-        self._show_characters()
+        self._show_images()
         self._show_info()
 
+
+
 if __name__ == "__main__":
-    iga = IGA(population_size=6, mutation_prob=0.01,
-              number_of_data=[3, 2, 12, 5, 5, 5, 13, 12, 22, 10, 104, 6])
-    app = App("Interactive Genetic Algorithm Cartoon Design", iga)
+    image_generator = ImageGenerator(population_size = 6, mutation_prob = 0.1)
+    app = App("IEC Art Design", image_generator)
     app._set_top_menu_bar()
     app._set_left_frame()
     app._set_right_frame()
